@@ -1,0 +1,109 @@
+https://deliciousbrains.com/ssl-certificate-authority-for-local-https-development/
+https://www.akadia.com/services/ssh_test_certificate.html
+
+================== CA ================== 
+1. Generate private key
+$ openssl genrsa -des3 -out myCA.key 2048
+Generating RSA private key, 2048 bit long modulus
+....................+++
+........+++
+e is 65537 (0x10001)
+Enter pass phrase for myCA.key:
+Verifying - Enter pass phrase for myCA.key:
+
+2. Generate CA certificate
+$ openssl req -x509 -new -nodes -key myCA.key -sha256 -days 1825 -out myCA.pem
+Enter pass phrase for myCA.key:
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [XX]:IN
+State or Province Name (full name) []:
+Locality Name (eg, city) [Default City]:Kolkata
+Organization Name (eg, company) [Default Company Ltd]:My Networks
+Organizational Unit Name (eg, section) []:
+Common Name (eg, your name or your server's hostname) []:localhost
+Email Address []:
+
+3. Install CA in CentOS 7
+$ sudo cp myCA.pem /etc/pki/ca-trust/source/anchors/
+$ sudo update-ca-trust
+
+================== Server ==================
+1. Generate private key
+$ openssl genrsa -out myServer.key 2048
+Generating RSA private key, 2048 bit long modulus
+.................................................+++
+....................................................+++
+e is 65537 (0x10001)
+
+2. Generate CSR
+$ openssl req -new -key myServer.key -out myServer.csr
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [XX]:IN
+State or Province Name (full name) []:
+Locality Name (eg, city) [Default City]:Kolkata
+Organization Name (eg, company) [Default Company Ltd]:ABC Company
+Organizational Unit Name (eg, section) []:
+Common Name (eg, your name or your server's hostname) []:localhost
+Email Address []:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:serverpass
+An optional company name []:
+
+3. Generate and sign certificate with CA
+$ openssl x509 -req -in myServer.csr -CA myCA.pem -CAkey myCA.key -CAcreateserial -out myServer.crt -days 825 -sha256
+Signature ok
+subject=/C=IN/L=Kolkata/O=ABC Company/CN=localhost
+Getting CA Private Key
+Enter pass phrase for myCA.key:
+
+================== Client ==================
+
+1. Generate private key
+$ openssl genrsa -out myClient.key 2048
+Generating RSA private key, 2048 bit long modulus
+.............+++
+.................................+++
+e is 65537 (0x10001)
+
+2. Generate CSR
+$ openssl req -new -key myClient.key -out myClient.csr
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [XX]:IN
+State or Province Name (full name) []:
+Locality Name (eg, city) [Default City]:Kolkata
+Organization Name (eg, company) [Default Company Ltd]:XYZ Company
+Organizational Unit Name (eg, section) []:
+Common Name (eg, your name or your server's hostname) []:localhost
+Email Address []:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:clientpass
+An optional company name []:
+
+3. Generate and sign certificate with CA
+$ openssl x509 -req -in myClient.csr -CA myCA.pem -CAkey myCA.key -CAcreateserial -out myClient.crt -days 825 -sha256
+Signature ok
+subject=/C=IN/L=Kolkata/O=XYZ Company/CN=localhost
+Getting CA Private Key
+Enter pass phrase for myCA.key:
