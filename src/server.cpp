@@ -102,11 +102,11 @@ public:
         boost::asio::ssl::context::default_workarounds
         | boost::asio::ssl::context::no_sslv2
         | boost::asio::ssl::context::single_dh_use);
-	context_.set_verify_mode(boost::asio::ssl::verify_peer | boost::asio::ssl::verify_fail_if_no_peer_cert);
+    context_.set_verify_mode(boost::asio::ssl::verify_peer | boost::asio::ssl::verify_fail_if_no_peer_cert);
     context_.set_password_callback(boost::bind(&server::get_password, this));
     context_.use_certificate_chain_file("myServer.crt");
     context_.use_private_key_file("myServer.key", boost::asio::ssl::context::pem);
-	context_.load_verify_file("/etc/pki/tls/certs/ca-bundle.crt");
+    context_.load_verify_file("/etc/pki/tls/certs/ca-bundle.crt");
 
     start_accept();
   }

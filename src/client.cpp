@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
       resolver.resolve(argv[1], argv[2]);
 
     boost::asio::ssl::context ctx(boost::asio::ssl::context::tlsv12_client);
-	ctx.use_certificate_chain_file("myClient.crt");
+    ctx.use_certificate_chain_file("myClient.crt");
     ctx.use_private_key_file("myClient.key", boost::asio::ssl::context::pem);
     ctx.load_verify_file("/etc/pki/tls/certs/ca-bundle.crt");
 
